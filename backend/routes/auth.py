@@ -8,6 +8,7 @@ auth_bp = Blueprint('auth', __name__)
 @auth_bp.route('/register', methods=['POST'])
 def register():
     data = request.get_json()
+
     hashed_pw = hashlib.sha256(data['password'].encode()).hexdigest()
     new_user = User(username=data['username'], password=hashed_pw, is_admin=data.get('is_admin', False))
     db.session.add(new_user)
