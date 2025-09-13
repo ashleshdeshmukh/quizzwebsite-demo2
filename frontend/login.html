@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login • Quizzed</title>
+    <link rel="stylesheet" href="style.css"/>
+    <link rel="stylesheet" href="login.css"/>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=menu" />
+</head>
+<body>
+    <div class="curved-edge"></div>
+    <h1>Quizzed</h1>
+
+    <div id="dropdowndiv">
+        <div id="dropdown" class="material-symbols-outlined"> menu </div>
+        <div id="dropdownbutton">
+            <p>
+                <a href="team.html" target="_self" id="linkteam">Our Team</a>
+            </p>
+            <p>Our Journey</p>
+        </div>
+    </div>
+
+    <main>
+        <div id="login-container">
+            <h2 id="login-title">Get Started</h2>
+            <p id="login-desc">Access your account to continue</p>
+            <form id="login-form" onsubmit="event.preventDefault(); login();">
+                <div class="form-field">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" placeholder="you@example.com" autocomplete="username" required />
+                </div>
+
+                <div class="form-field">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="••••••••" autocomplete="current-password" required />
+                </div>
+
+                <div class="extras">
+                                        <label class="remember">
+                        <input type="checkbox" id="show-password" />
+                        Show password
+                    </label>
+                    <a href="register.html">Dont have an account? Register</a>
+                </div>
+
+                <div class="actions">
+                    <button id="login-submit" type="submit">Log In</button>
+                </div>
+            </form>
+        </div>
+    </main>
+    <script>
+      (function() {
+        var checkbox = document.getElementById('show-password');
+        var passwordInput = document.getElementById('password');
+        if (checkbox && passwordInput) {
+          checkbox.addEventListener('change', function() {
+            passwordInput.type = this.checked ? 'text' : 'password';
+          });
+        }
+      })();
+        async function login(){
+            const username = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+
+            try {
+                const res = await fetch("http://127.0.0.1:5000/auth/register", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ username, password }) // match server keys
+            });
+
+              const data = await res.json();
+
+                if (res.ok) {
+                    alert(data.message || "Logged in successfully!");
+                    window.location.href = "landing.html"; // redirect to login page
+                } else {
+                    alert(data.error || "Login failed");
+                }
+            } catch (err) {
+                console.error("Error:", err);
+                alert("Something went wrong. Please try again.");
+            }
+        }
+    </script>
+</body>
+</html>
