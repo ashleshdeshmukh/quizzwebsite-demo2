@@ -22,9 +22,11 @@
         </div>
     </div>
 
-    
     <main>
-        <div id="central-box" aria-label="Central content box"></div>
+        <div id="central-box" aria-label="Central content box">
+            <h2>Available Quizzes</h2>
+            <ul id="quiz-list"></ul>
+        </div>
     </main>
 
     <div id="class">
@@ -36,5 +38,60 @@
         <a><p> 5 </p></a>
         <a><p> > </p></a>
     </div>
+
+    <script>
+        // Fetch quizzes from backend and populate central content box
+        async function fetchQuizzes() {
+            const token = localStorage.getItem("token");
+            if (!token) {
+                alert("You must be logged in to see quizzes.");
+                window.location.href = "login.html";
+                return;
+            }
+
+            try {
+                const res = await fetch("http://127.0.0.1:5000/quiz/all", {
+                    headers: { "Authorization": `Bearer ${token}` }
+                });
+
+                if (!res.ok) throw new Error("Failed to fetch quizzes");
+
+                const quizzes = await res.json();
+                const listEl = document.getElementById("quiz-list");
+                listEl.innerHTML = "";
+
+                if (quizzes.length === 0) {
+                    const li = document.createElement("li");
+                    li.textContent = "No quizzes available yet.";
+                    listEl.appendChild(li);
+                    return;
+                }
+
+                quizzes.forEach(q => {
+                    const li = document.createElement("li");
+                    const btn = document.createElement("button");
+                    btn.textContent = q.title;
+                    btn.className = "quiz-btn";
+                    btn.addEventListener("click", () => selectQuiz(q.id, q.title));
+                    li.appendChild(btn);
+                    listEl.appendChild(li);
+                });
+
+            } catch (err) {
+                console.error(err);
+                alert("Could not load quizzes. Make sure you are logged in.");
+            }
+        }
+
+        // Save selected quiz and redirect
+        function selectQuiz(id, title) {
+            localStorage.setItem("selectedQuizId", id);
+            localStorage.setItem("selectedQuizTitle", title);
+            window.location.href = "quiz.html";
+        }
+
+        // Run when page loads
+        window.addEventListener("DOMContentLoaded", fetchQuizzes);
+    </script>
 </body>
 </html>

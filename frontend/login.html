@@ -61,30 +61,35 @@
           });
         }
       })();
-        async function login(){
-            const username = document.getElementById("email").value;
-            const password = document.getElementById("password").value;
 
-            try {
-                const res = await fetch("http://127.0.0.1:5000/auth/login", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ username, password }) // match server keys
-            });
 
-              const data = await res.json();
 
-                if (res.ok) {
-                    alert(data.message || "Logged in successfully!");
-                    window.location.href = "landing.html"; // redirect to login page
-                } else {
-                    alert(data.error || "Login failed");
-                }
-            } catch (err) {
-                console.error("Error:", err);
-                alert("Something went wrong. Please try again.");
-            }
+    async function login() {
+    const username = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+
+    try {
+        const res = await fetch("http://127.0.0.1:5000/auth/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username, password })
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+            localStorage.setItem("token", data.token); // <-- store token
+            window.location.href = "landing.html";
+        } else {
+            alert(data.message || "Login failed");
         }
+    } catch (err) {
+        console.error("Error:", err);
+        alert("Something went wrong. Please try again.");
+    }
+}
+
+
     </script>
 </body>
 </html>

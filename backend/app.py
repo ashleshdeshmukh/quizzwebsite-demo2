@@ -16,7 +16,11 @@ CORS(app)
 def serve_frontend(path):
     return send_from_directory(app.static_folder, path)
 
-app.config['SQLALCHEMY_DATABASE_URI'] ='sqlite:///database.db'
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))  # folder where app.py is
+db_path = os.path.join(BASE_DIR, "database.db")
+app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{db_path}"
+
+#app.config['SQLALCHEMY_DATABASE_URI'] ='sqlite:///backend/database.db'
 app.config['JWT_SECRET_KEY'] = 'super-secret-key'
 
 db.init_app(app)
