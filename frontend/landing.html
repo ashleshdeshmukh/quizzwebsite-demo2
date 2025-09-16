@@ -12,6 +12,7 @@
     <div class="curved-edge"></div>
     <h1>Quizzed</h1>
 
+    <!-- Keep your team/journey dropdown unchanged -->
     <div id="dropdowndiv">
         <div id="dropdown" class="material-symbols-outlined"> menu </div>
         <div id="dropdownbutton">
@@ -25,7 +26,11 @@
     <main>
         <div id="central-box" aria-label="Central content box">
             <h2>Available Quizzes</h2>
-            <ul id="quiz-list"></ul>
+            <!-- Changed from list to dropdown -->
+            <select id="quiz-dropdown">
+                <option disabled selected>-- Select a quiz --</option>
+            </select>
+            <button id="start-quiz-btn">Start Quiz</button>
         </div>
     </main>
 
@@ -40,7 +45,7 @@
     </div>
 
     <script>
-        // Fetch quizzes from backend and populate central content box
+        // Fetch quizzes and populate dropdown
         async function fetchQuizzes() {
             const token = localStorage.getItem("token");
             if (!token) {
@@ -57,24 +62,21 @@
                 if (!res.ok) throw new Error("Failed to fetch quizzes");
 
                 const quizzes = await res.json();
-                const listEl = document.getElementById("quiz-list");
-                listEl.innerHTML = "";
+                const dropdown = document.getElementById("quiz-dropdown");
 
                 if (quizzes.length === 0) {
-                    const li = document.createElement("li");
-                    li.textContent = "No quizzes available yet.";
-                    listEl.appendChild(li);
+                    const option = document.createElement("option");
+                    option.disabled = true;
+                    option.textContent = "No quizzes available yet.";
+                    dropdown.appendChild(option);
                     return;
                 }
 
                 quizzes.forEach(q => {
-                    const li = document.createElement("li");
-                    const btn = document.createElement("button");
-                    btn.textContent = q.title;
-                    btn.className = "quiz-btn";
-                    btn.addEventListener("click", () => selectQuiz(q.id, q.title));
-                    li.appendChild(btn);
-                    listEl.appendChild(li);
+                    const option = document.createElement("option");
+                    option.value = q.id;
+                    option.textContent = q.title;
+                    dropdown.appendChild(option);
                 });
 
             } catch (err) {
@@ -84,11 +86,20 @@
         }
 
         // Save selected quiz and redirect
-        function selectQuiz(id, title) {
-            localStorage.setItem("selectedQuizId", id);
-            localStorage.setItem("selectedQuizTitle", title);
+        document.getElementById("start-quiz-btn").addEventListener("click", () => {
+            const dropdown = document.getElementById("quiz-dropdown");
+            const selectedId = dropdown.value;
+            const selectedTitle = dropdown.options[dropdown.selectedIndex]?.text;
+
+            if (!selectedId) {
+                alert("Please select a quiz first.");
+                return;
+            }
+
+            localStorage.setItem("selectedQuizId", selectedId);
+            localStorage.setItem("selectedQuizTitle", selectedTitle);
             window.location.href = "quiz.html";
-        }
+        });
 
         // Run when page loads
         window.addEventListener("DOMContentLoaded", fetchQuizzes);
