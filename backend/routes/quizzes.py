@@ -6,7 +6,7 @@ quiz_bp = Blueprint('quiz', __name__)
 
 # Admin: Create a quiz
 @quiz_bp.route('/create', methods=['POST'])
-@jwt_required()
+#@jwt_required()
 def create_quiz():
     identity = get_jwt_identity()
     if not identity['is_admin']:
@@ -39,7 +39,7 @@ def get_all_quizzes():
 
 # Get questions for a selected quiz by title
 @quiz_bp.route('/by-title', methods=['POST'])
-@jwt_required()
+#@jwt_required()
 def get_quiz_by_title():
     data = request.json
     title = data.get('title')

@@ -120,30 +120,45 @@
     </div>
 
     <!-- Center: selected quiz -->
-    <div id="central-box" style="
-        flex:1;
-        padding:20px;
-        border:1px solid #ccc;
-        border-radius:6px;
-        min-height:300px;
-        margin-left:20px;
-    ">
-        <h2>Select a quiz to start</h2>
-        <div style="text-align:center;">
-            <button id="start-quiz-btn" style="
-                margin-top:20px;
-                padding:12px 40px;
-                font-size:16px;
-                cursor:pointer;
-                border-radius:6px;
-                border:none;
-                background-color:#28a745;
-                color:white;
-                transition:background-color 0.2s;
-                display:none;
-            ">Start Quiz</button>
+    <!-- Replace the central-box section in landing.html with this -->
+<div id="central-box" style="
+    flex:1;
+    padding:20px;
+    border:1px solid #ccc;
+    border-radius:6px;
+    min-height:300px;
+    margin-left:20px;
+">
+    <h2>Select a quiz to start</h2>
+    <div style="text-align:center;">
+        <button id="start-quiz-btn" style="
+            margin-top:20px;
+            padding:12px 40px;
+            font-size:16px;
+            cursor:pointer;
+            border-radius:6px;
+            border:none;
+            background-color:#28a745;
+            color:white;
+            transition:background-color 0.2s;
+            display:none;
+        ">Start Quiz</button>
+    </div>
+    <!-- Quiz questions container -->
+    <div id="quiz-question-container" style="margin-top:20px; display:none;">
+        <p id="question-text" style="font-weight:bold; font-size:18px;"></p>
+        <div id="options-container" style="margin-top:10px;"></div>
+        <div style="margin-top:15px;">
+            <button id="submit-btn" style="
+                padding:10px 20px; font-size:16px; border:none; border-radius:6px; background-color:#007BFF; color:white; cursor:pointer;
+            ">Submit</button>
+            <button id="next-btn" style="
+                padding:10px 20px; font-size:16px; border:none; border-radius:6px; background-color:#28a745; color:white; cursor:pointer; display:none;
+            ">Next</button>
         </div>
     </div>
+</div>
+
 </main>
 
 <!-- Pagination -->
@@ -231,14 +246,104 @@ function selectQuiz(id, title, btn) {
     startBtn.style.display = "inline-block";
 }
 
-document.getElementById("start-quiz-btn").addEventListener("click", () => {
-    if (!selectedQuiz) return;
-    localStorage.setItem("selectedQuizId", selectedQuiz.id);
-    localStorage.setItem("selectedQuizTitle", selectedQuiz.title);
-    window.location.href = "quiz.html";
-});
 
 window.addEventListener("DOMContentLoaded", fetchQuizzes);
+
+        let currentQuestions = [];
+let currentIndex = 0;
+let selectedOption = null;
+
+document.getElementById("start-quiz-btn").addEventListener("click", async () => {
+    if (!selectedQuiz) return;
+
+    const token = localStorage.getItem("token");
+    try {
+        const res = await fetch("http://127.0.0.1:5000/quiz/by-title", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            },
+            body: JSON.stringify({ title: selectedQuiz.title })
+        });
+        if (!res.ok) throw new Error("Failed to fetch quiz questions");
+
+        const data = await res.json();
+        currentQuestions = data.questions;
+        currentIndex = 0;
+
+        document.getElementById("start-quiz-btn").style.display = "none";
+        document.getElementById("quiz-question-container").style.display = "block";
+
+        showQuestion(currentIndex);
+    } catch (err) {
+        console.error(err);
+        alert("Could not load quiz questions.");
+    }
+});
+
+
+function showQuestion(index) {
+    const q = currentQuestions[index];
+    const questionText = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options-container");
+
+    questionText.textContent = q.question;
+    optionsContainer.innerHTML = "";
+
+    q.options.forEach(opt => {
+        const btn = document.createElement("button");
+        btn.textContent = opt;
+        btn.style.display = "block";
+        btn.style.marginBottom = "10px";
+        btn.style.width = "100%";
+        btn.style.padding = "10px";
+        btn.style.borderRadius = "6px";
+        btn.style.border = "1px solid #ccc";
+        btn.style.cursor = "pointer";
+        btn.addEventListener("click", () => {
+            selectedOption = opt;
+            Array.from(optionsContainer.children).forEach(b => b.style.backgroundColor = "#f2f2f2");
+            btn.style.backgroundColor = "#007BFF";
+            btn.style.color = "white";
+        });
+        optionsContainer.appendChild(btn);
+    });
+
+    document.getElementById("submit-btn").style.display = "inline-block";
+    document.getElementById("next-btn").style.display = "none";
+}
+
+document.getElementById("submit-btn").addEventListener("click", () => {
+    if (!selectedOption) {
+        alert("Please select an option");
+        return;
+    }
+
+    const correctAnswer = currentQuestions[currentIndex].options.find(opt => opt === selectedOption);
+    if (selectedOption === currentQuestions[currentIndex].options.find(opt => opt === currentQuestions[currentIndex].correct_answer)) {
+        alert("Correct!");
+    } else {
+        alert(`Wrong! Correct answer: ${currentQuestions[currentIndex].correct_answer}`);
+    }
+
+    document.getElementById("submit-btn").style.display = "none";
+    document.getElementById("next-btn").style.display = "inline-block";
+});
+
+document.getElementById("next-btn").addEventListener("click", () => {
+    selectedOption = null;
+    currentIndex++;
+    if (currentIndex < currentQuestions.length) {
+        showQuestion(currentIndex);
+    } else {
+        alert("Quiz completed!");
+        document.getElementById("quiz-question-container").style.display = "none";
+        document.getElementById("central-box").querySelector("h2").textContent = "Select a quiz to start";
+        document.getElementById("start-quiz-btn").style.display = "inline-block";
+    }
+});
+
 
     </script>
 </body>
