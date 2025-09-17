@@ -4,12 +4,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Libertinus+Keyboard&family=Manufacturing+Consent&family=Story+Script&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Libertinus+Keyboard&family=Manufacturing+Consent&family=Pacifico&family=Story+Script&display=swap');
 
-@media screen and (max-width:600px){    
+@media screen and (max-width:600px){
 }
 
 #desc{
     position: relative;
-    padding-top:15px;       
+    padding-top:15px;
 }
 
 html{
