@@ -9,342 +9,192 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=menu" />
     <style>
         /* Layout */
-        #container {
-            display: flex;
-            gap: 20px;
-            padding: 40px 20px 100px 20px; /* top padding higher */
-            min-height: calc(100vh - 200px); /* leave space for header and pagination */
-        }
-
-        #quiz-list-panel {
-            width: 220px;
-            border-right: 1px solid #ccc;
-            margin-top: 20px; /* push it higher */
-        }
-
-        #quiz-list-panel h3 {
-            margin-bottom: 10px;
-        }
-
-        #quiz-list-panel button {
-            display: block;
-            width: 100%;
-            margin-bottom: 10px;
-            padding: 12px 15px;
-            cursor: pointer;
-            border: none;
-            background-color: #f2f2f2;
-            border-radius: 6px;
-            font-size: 16px;
-            text-align: left;
-            transition: background-color 0.2s, color 0.2s;
-        }
-
-        #quiz-list-panel button:hover {
-            background-color: #ddd;
-        }
-
-        #quiz-list-panel button.selected {
-            background-color: #007BFF;
-            color: white;
-            font-weight: bold;
-        }
-
-        #central-box {
-            flex: 1;
-            padding: 20px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            min-height: 300px;
-            margin-bottom: 20px; /* prevent overlap with pagination */
-        }
-
-        #start-quiz-btn {
-            margin-top: 20px;
-            display: none;
-            padding: 12px 20px;
-            font-size: 16px;
-            cursor: pointer;
-            border-radius: 6px;
-            border: none;
-            background-color: #28a745;
-            color: white;
-            transition: background-color 0.2s;
-        }
-
-        #start-quiz-btn:hover {
-            background-color: #218838;
-        }
-
-        /* Ensure pagination stays at bottom */
-        #class {
-            clear: both;
-            padding: 10px 20px;
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            position: relative;
-            bottom: 0;
-        }
+        #container { display: flex; gap: 20px; padding: 20px; min-height: calc(100vh - 200px); }
+        #quiz-list-panel { width: 220px; border-right:1px solid #ccc; position:sticky; top:20px; max-height: calc(100vh - 60px); overflow-y:auto; padding-right:10px; }
+        #quiz-list-panel h3 { margin-bottom: 10px; }
+        #quiz-list-panel button { display: block; width: 100%; margin-bottom: 10px; padding: 12px 15px; cursor: pointer; border: none; background-color: #f2f2f2; border-radius: 6px; font-size: 16px; text-align: left; transition: background-color 0.2s, color 0.2s; }
+        #quiz-list-panel button:hover { background-color: #ddd; }
+        #quiz-list-panel button.selected { background-color: #007BFF; color: white; font-weight: bold; }
+        #central-box { flex:1; padding:20px; border:1px solid #ccc; border-radius:6px; min-height:300px; margin-left:20px; }
+        #start-quiz-btn, #submit-btn, #next-btn { padding: 12px 40px; font-size:16px; cursor:pointer; border-radius:6px; border:none; transition: background-color 0.2s; }
+        #start-quiz-btn { background-color:#28a745; color:white; display:none; margin-top:20px; }
+        #start-quiz-btn:hover { background-color:#218838; }
+        #submit-btn { background-color:#007BFF; color:white; }
+        #submit-btn:hover { background-color:#0056b3; }
+        #next-btn { background-color:#28a745; color:white; display:none; }
+        #next-btn:hover { background-color:#218838; }
+        #score-display { font-weight:bold; font-size:18px; margin-bottom:15px; }
+        #leaderboard { margin-top:20px; display:none; }
+        #leaderboard h3 { margin-bottom:10px; }
+        #leaderboard ol { padding-left:20px; }
     </style>
 </head>
 <body>
     <div class="curved-edge"></div>
     <h1>Quizzed</h1>
 
-    <!-- Team dropdown unchanged -->
     <div id="dropdowndiv">
         <div id="dropdown" class="material-symbols-outlined"> menu </div>
         <div id="dropdownbutton">
-            <p>
-                <a href="team.html" target="_self" id="linkteam">Our Team</a>
-            </p>
+            <p><a href="team.html" target="_self" id="linkteam">Our Team</a></p>
             <p>Our Journey</p>
         </div>
     </div>
 
-   <main id="container" style="display:flex; gap:20px; padding:20px 20px 20px 20px; min-height: calc(100vh - 200px);">
-    <!-- Left: quiz list -->
-    <div id="quiz-list-panel" style="
-        width:220px;
-        margin-top:10px;
-        position:sticky;
-        top:20px;
-        border-right:1px solid #ccc;
-        padding-right:10px;
-        max-height: calc(100vh - 60px);
-        overflow-y:auto;
-    ">
-        <h3 style="font-family:'Roboto', sans-serif; margin-bottom:20px;">Available Quizzes</h3>
-        <div id="quiz-buttons"></div>
-    </div>
+    <main id="container">
 
-    <!-- Center: selected quiz -->
-    <!-- Replace the central-box section in landing.html with this -->
-<div id="central-box" style="
-    flex:1;
-    padding:20px;
-    border:1px solid #ccc;
-    border-radius:6px;
-    min-height:300px;
-    margin-left:20px;
-">
-    <h2>Select a quiz to start</h2>
-    <div style="text-align:center;">
-        <button id="start-quiz-btn" style="
-            margin-top:20px;
-            padding:12px 40px;
-            font-size:16px;
-            cursor:pointer;
-            border-radius:6px;
-            border:none;
-            background-color:#28a745;
-            color:white;
-            transition:background-color 0.2s;
-            display:none;
-        ">Start Quiz</button>
-    </div>
-    <!-- Quiz questions container -->
-    <div id="quiz-question-container" style="margin-top:20px; display:none;">
-        <p id="question-text" style="font-weight:bold; font-size:18px;"></p>
-        <div id="options-container" style="margin-top:10px;"></div>
-        <div style="margin-top:15px;">
-            <button id="submit-btn" style="
-                padding:10px 20px; font-size:16px; border:none; border-radius:6px; background-color:#007BFF; color:white; cursor:pointer;
-            ">Submit</button>
-            <button id="next-btn" style="
-                padding:10px 20px; font-size:16px; border:none; border-radius:6px; background-color:#28a745; color:white; cursor:pointer; display:none;
-            ">Next</button>
+        <!-- Quiz List -->
+        <div id="quiz-list-panel">
+            <h3>Available Quizzes</h3>
+            <div id="quiz-buttons"></div>
         </div>
-    </div>
-</div>
 
-</main>
+        <!-- Central Box -->
+        <div id="central-box">
+            <div id="score-display" style="display:none;">Score: 0</div>
+            <h2>Select a quiz to start</h2>
+            <div style="text-align:center;">
+                <button id="start-quiz-btn">Start Quiz</button>
+            </div>
 
-<!-- Pagination -->
-<div id="class" style="padding:10px 20px; display:flex; justify-content:center; gap:10px;">
+            <!-- Quiz Questions -->
+            <div id="quiz-question-container" style="margin-top:20px; display:none;">
+                <p id="question-text" style="font-weight:bold; font-size:18px;"></p>
+                <div id="options-container" style="margin-top:10px;"></div>
+                <div style="margin-top:15px;">
+                    <button id="submit-btn">Submit</button>
+                    <button id="next-btn">Next</button>
+                </div>
+            </div>
 
-</div>
+            <!-- Leaderboard -->
+            <div id="leaderboard">
+                <h3>Leaderboard</h3>
+                <ol id="leaderboard-list"></ol>
+            </div>
+        </div>
+    </main>
 
-
-    <script>
-       let selectedQuiz = null;
-let buttons = [];
+<script>
+let selectedQuiz = null, buttons = [], currentQuestions = [], currentIndex = 0, selectedOption = null, score = 0;
 
 async function fetchQuizzes() {
     const token = localStorage.getItem("token");
-    if (!token) {
-        alert("You must be logged in to see quizzes.");
-        window.location.href = "login.html";
-        return;
-    }
-
+    if (!token) { alert("You must be logged in to see quizzes."); return; }
     try {
-        const res = await fetch("http://127.0.0.1:5000/quiz/all", {
-            headers: { "Authorization": `Bearer ${token}` }
-        });
-        if (!res.ok) throw new Error("Failed to fetch quizzes");
-
+        const res = await fetch("http://127.0.0.1:5000/quiz/all", { headers: { "Authorization": `Bearer ${token}` } });
         const quizzes = await res.json();
         const quizButtonsDiv = document.getElementById("quiz-buttons");
         quizButtonsDiv.innerHTML = "";
-
-        if (quizzes.length === 0) {
-            quizButtonsDiv.textContent = "No quizzes available yet.";
-            return;
-        }
-
+        if (quizzes.length === 0) { quizButtonsDiv.textContent = "No quizzes available yet."; return; }
         buttons = [];
         quizzes.forEach(q => {
             const btn = document.createElement("button");
             btn.textContent = q.title;
-            btn.style.fontFamily = "Roboto, sans-serif";
             btn.style.backgroundColor = "#4fa4ac";
             btn.style.color = "white";
-            btn.style.padding = "10px";
-            btn.style.width = "100%";
-            btn.style.marginBottom = "10px";
-            btn.style.borderRadius = "8px";
-            btn.style.border = "none";
-            btn.style.cursor = "pointer";
-            btn.style.transition = "all 0.3s ease";
-            btn.addEventListener("mouseenter", () => {
-                btn.style.backgroundColor = "#252424";
-                btn.style.color = "#ffffff";
-            });
-            btn.addEventListener("mouseleave", () => {
-                if (!btn.classList.contains("selected")) {
-                    btn.style.backgroundColor = "#4fa4ac";
-                    btn.style.color = "white";
-                }
-            });
-            btn.addEventListener("click", () => selectQuiz(q.id, q.title, btn));
+            btn.addEventListener("click", () => selectQuiz(q.id,q.title,btn));
             quizButtonsDiv.appendChild(btn);
             buttons.push(btn);
         });
-
-    } catch (err) {
-        console.error(err);
-        alert("Could not load quizzes. Make sure you are logged in.");
-    }
+    } catch (err) { console.error(err); alert("Could not load quizzes."); }
 }
 
-function selectQuiz(id, title, btn) {
-    selectedQuiz = { id, title };
-    buttons.forEach(b => {
-        b.classList.remove("selected");
-        b.style.backgroundColor = "#4fa4ac";
-        b.style.color = "white";
-    });
-    btn.classList.add("selected");
-    btn.style.backgroundColor = "#252424";
-    btn.style.color = "#ffffff";
-
-    const centralBox = document.getElementById("central-box");
-    centralBox.querySelector("h2").textContent = `Selected Quiz: ${title}`;
-    const startBtn = document.getElementById("start-quiz-btn");
-    startBtn.style.display = "inline-block";
+function selectQuiz(id,title,btn){
+    selectedQuiz = {id,title};
+    buttons.forEach(b=>{b.classList.remove("selected"); b.style.backgroundColor="#4fa4ac"; b.style.color="white";});
+    btn.classList.add("selected"); btn.style.backgroundColor="#252424"; btn.style.color="white";
+    document.querySelector("#central-box h2").textContent = `Selected Quiz: ${title}`;
+    document.getElementById("start-quiz-btn").style.display = "inline-block";
+    document.getElementById("leaderboard").style.display = "none";
+    document.getElementById("score-display").style.display = "none";
+    score = 0;
 }
 
-
-window.addEventListener("DOMContentLoaded", fetchQuizzes);
-
-        let currentQuestions = [];
-let currentIndex = 0;
-let selectedOption = null;
-
-document.getElementById("start-quiz-btn").addEventListener("click", async () => {
-    if (!selectedQuiz) return;
-
+document.getElementById("start-quiz-btn").addEventListener("click", async ()=>{
+    if(!selectedQuiz) return;
     const token = localStorage.getItem("token");
-    try {
+    try{
         const res = await fetch("http://127.0.0.1:5000/quiz/by-title", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`
-            },
-            body: JSON.stringify({ title: selectedQuiz.title })
+            method:"POST",
+            headers: { "Content-Type":"application/json", "Authorization":`Bearer ${token}` },
+            body: JSON.stringify({ title:selectedQuiz.title })
         });
-        if (!res.ok) throw new Error("Failed to fetch quiz questions");
-
         const data = await res.json();
-        currentQuestions = data.questions;
-        currentIndex = 0;
-
-        document.getElementById("start-quiz-btn").style.display = "none";
-        document.getElementById("quiz-question-container").style.display = "block";
-
+        currentQuestions = data.questions; currentIndex=0; selectedOption=null; score=0;
+        document.getElementById("start-quiz-btn").style.display="none";
+        document.getElementById("quiz-question-container").style.display="block";
+        document.getElementById("score-display").style.display="block";
+        document.getElementById("score-display").textContent = `Score: ${score}`;
         showQuestion(currentIndex);
-    } catch (err) {
-        console.error(err);
-        alert("Could not load quiz questions.");
-    }
+    }catch(err){ console.error(err); alert("Could not load quiz questions."); }
 });
 
-
-function showQuestion(index) {
+function showQuestion(index){
     const q = currentQuestions[index];
     const questionText = document.getElementById("question-text");
     const optionsContainer = document.getElementById("options-container");
-
     questionText.textContent = q.question;
-    optionsContainer.innerHTML = "";
-
-    q.options.forEach(opt => {
+    optionsContainer.innerHTML="";
+    selectedOption = null;
+    q.options.forEach(opt=>{
         const btn = document.createElement("button");
-        btn.textContent = opt;
-        btn.style.display = "block";
-        btn.style.marginBottom = "10px";
-        btn.style.width = "100%";
-        btn.style.padding = "10px";
-        btn.style.borderRadius = "6px";
-        btn.style.border = "1px solid #ccc";
-        btn.style.cursor = "pointer";
-        btn.addEventListener("click", () => {
+        btn.textContent=opt;
+        btn.style.display="block"; btn.style.width="100%"; btn.style.padding="10px"; btn.style.marginBottom="10px"; btn.style.borderRadius="6px"; btn.style.border="1px solid #ccc"; btn.style.cursor="pointer";
+        btn.addEventListener("click", ()=>{
             selectedOption = opt;
-            Array.from(optionsContainer.children).forEach(b => b.style.backgroundColor = "#f2f2f2");
-            btn.style.backgroundColor = "#007BFF";
-            btn.style.color = "white";
+            Array.from(optionsContainer.children).forEach(b=>b.style.backgroundColor="#f2f2f2");
+            btn.style.backgroundColor="#007BFF"; btn.style.color="white";
         });
         optionsContainer.appendChild(btn);
     });
-
-    document.getElementById("submit-btn").style.display = "inline-block";
-    document.getElementById("next-btn").style.display = "none";
+    document.getElementById("submit-btn").style.display="inline-block";
+    document.getElementById("next-btn").style.display="none";
 }
 
-document.getElementById("submit-btn").addEventListener("click", () => {
-    if (!selectedOption) {
-        alert("Please select an option");
-        return;
-    }
-
-    const correctAnswer = currentQuestions[currentIndex].options.find(opt => opt === selectedOption);
-    if (selectedOption === currentQuestions[currentIndex].options.find(opt => opt === currentQuestions[currentIndex].correct_answer)) {
-        alert("Correct!");
-    } else {
-        alert(`Wrong! Correct answer: ${currentQuestions[currentIndex].correct_answer}`);
-    }
-
-    document.getElementById("submit-btn").style.display = "none";
-    document.getElementById("next-btn").style.display = "inline-block";
+document.getElementById("submit-btn").addEventListener("click", ()=>{
+    if(!selectedOption){ alert("Please select an option"); return; }
+    const correctAnswer = currentQuestions[currentIndex].correct_answer;
+    if(selectedOption === correctAnswer){ alert("Correct!"); score++; } else{ alert(`Wrong! Correct answer: ${correctAnswer}`); }
+    document.getElementById("score-display").textContent = `Score: ${score}`;
+    document.getElementById("submit-btn").style.display="none";
+    document.getElementById("next-btn").style.display="inline-block";
 });
 
-document.getElementById("next-btn").addEventListener("click", () => {
-    selectedOption = null;
+document.getElementById("next-btn").addEventListener("click", async ()=>{
     currentIndex++;
-    if (currentIndex < currentQuestions.length) {
-        showQuestion(currentIndex);
-    } else {
-        alert("Quiz completed!");
-        document.getElementById("quiz-question-container").style.display = "none";
-        document.getElementById("central-box").querySelector("h2").textContent = "Select a quiz to start";
-        document.getElementById("start-quiz-btn").style.display = "inline-block";
+    if(currentIndex < currentQuestions.length){ showQuestion(currentIndex); }
+    else{
+        alert(`Quiz completed! Final score: ${score}/${currentQuestions.length}`);
+        document.getElementById("quiz-question-container").style.display="none";
+        document.querySelector("#central-box h2").textContent="Select a quiz to start";
+        document.getElementById("start-quiz-btn").style.display="inline-block";
+        document.getElementById("score-display").style.display="none";
+
+        // Submit score to backend
+        const token = localStorage.getItem("token");
+        try{
+            await fetch("http://127.0.0.1:5000/quiz/submit-score", {
+                method:"POST",
+                headers:{ "Content-Type":"application/json", "Authorization":`Bearer ${token}` },
+                body: JSON.stringify({ quiz_id:selectedQuiz.id, score:score, total_questions:currentQuestions.length })
+            });
+            // Show leaderboard
+            const res = await fetch(`http://127.0.0.1:5000/quiz/leaderboard/${selectedQuiz.id}`);
+            const leaderboard = await res.json();
+            const list = document.getElementById("leaderboard-list");
+            list.innerHTML="";
+            leaderboard.forEach(entry=>{
+                const li = document.createElement("li");
+                li.textContent=`${entry.username}: ${entry.score}/${entry.total}`;
+                list.appendChild(li);
+            });
+            document.getElementById("leaderboard").style.display="block";
+        }catch(err){ console.error(err); }
     }
 });
 
-
-    </script>
+window.addEventListener("DOMContentLoaded", fetchQuizzes);
+</script>
 </body>
 </html>

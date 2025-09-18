@@ -56,7 +56,8 @@ def get_quiz_by_title():
         questions_list.append({
             'id': q.id,
             'question': q.question_text,
-            'options': q.options
+            'options': q.options,
+            'correct_answer': q.correct_answer
         })
 
     return jsonify({
@@ -64,3 +65,39 @@ def get_quiz_by_title():
         'title': quiz.title,
         'questions': questions_list
     })
+
+
+# backend/routes/quizzes.py
+@quiz_bp.route('/submit-score', methods=['POST'])
+#@jwt_required()
+def submit_score():
+    identity = get_jwt_identity()
+    user_id = identity['id']
+
+    data = request.json
+    quiz_id = data.get('quiz_id')
+    score = data.get('score')
+    total_questions = data.get('total_questions')
+
+    if quiz_id is None or score is None or total_questions is None:
+        return jsonify(message="Incomplete data"), 400
+
+    # Save result
+    result = QuizResult(user_id=user_id, quiz_id=quiz_id, score=score, total_questions=total_questions)
+    db.session.add(result)
+    db.session.commit()
+
+    return jsonify(message="Score submitted successfully")
+
+@quiz_bp.route('/leaderboard/<int:quiz_id>', methods=['GET'])
+def leaderboard(quiz_id):
+    results = QuizResult.query.filter_by(quiz_id=quiz_id).order_by(QuizResult.score.desc()).limit(10).all()
+    leaderboard_data = []
+    for r in results:
+        user = User.query.get(r.user_id)
+        leaderboard_data.append({
+            'username': user.username,
+            'score': r.score,
+            'total': r.total_questions
+        })
+    return jsonify(leaderboard_data)
