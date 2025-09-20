@@ -1,89 +1,199 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Login • Quizzed</title>
-    <link rel="stylesheet" href="style.css"/>
-    <link rel="stylesheet" href="login.css"/>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=menu" />
-     <link rel="stylesheet" href="tpp.css">
-</head>
-<body>
-    <div class="curved-edge"></div>
-    <a  class="gul"id href="index.html" target="_self"><h1>Quizzed</h1></a>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Manufacturing+Consent&family=Story+Script&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Libertinus+Keyboard&family=Manufacturing+Consent&family=Story+Script&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Libertinus+Keyboard&family=Manufacturing+Consent&family=Pacifico&family=Story+Script&display=swap');
 
-    <div id="dropdowndiv">
-        <div id="dropdown" class="material-symbols-outlined"> menu </div>
-        <div id="dropdownbutton">
-            <p>
-                <a href="team.html" target="_self" id="linkteam">Our Team</a>
-            </p>
-        </div>
-    </div>
+@media screen and (max-width:600px){
+}
+body,html{
+    overflow-x: hidden;
+    overflow-y:hidden;
+}
 
-    <main>
-        <div id="login-container">
-            <h2 id="login-title">Register</h2>
-            <p id="login-desc">Create an account to continue</p>
-            <form id="login-form" onsubmit="event.preventDefault(); register();">
-                <div class="form-field">
-                    <label for="email">Email</label>
-                    <input type="email" id="email" name="email" placeholder="you@example.com" autocomplete="username" required />
-                </div>
 
-                <div class="form-field">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" name="password" placeholder="••••••••" autocomplete="current-password" required />
-                </div>
 
-                <div class="extras">
-                                        <label class="remember">
-                        <input type="checkbox" id="show-password" />
-                        Show password
-                    </label>
-                </div>
+#desc{
+    position: relative;
+    padding-top:15px;
+}
 
-                <div class="actions">
-                    <button id="login-submit" type="submit">Register</button>
-                </div>
-            </form>
-        </div>
-    </main>
-    <script>
-        (function() {
-        var checkbox = document.getElementById('show-password');
-        var passwordInput = document.getElementById('password');
-        if (checkbox && passwordInput) {
-          checkbox.addEventListener('change', function() {
-            passwordInput.type = this.checked ? 'text' : 'password';
-          });
-        }
-      })();
-        async function register(){
-            const username = document.getElementById("email").value;
-            const password = document.getElementById("password").value;
+html{
+    background-color: antiquewhite;
+    height: 100%;
+    overflow: hidden;
+}
 
-            try {
-                const res = await fetch("http://127.0.0.1:5000/auth/register", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ username, password }) // match server keys
-            });
 
-              const data = await res.json();
+.curved-edge {
+  --c: 70px;
+  height: 200px;
+  width:100%;
+  min-width: 90%;
+  max-width:120%;
+  aspect-ratio: 3/2;
+  mask: radial-gradient(60% var(--c) at bottom,#0000 calc(100% - 2px),#000);
+  background: #40C0CB;
+  border-bottom-width:5px;
+  border-bottom-style:solid;
+  border-bottom-color:aquamarine;
+}
 
-                if (res.ok) {
-                    alert(data.message || "Registered successfully!");
-                    window.location.href = "login.html"; // redirect to login page
-                } else {
-                    alert(data.error || "Registration failed");
-                }
-            } catch (err) {
-                console.error("Error:", err);
-                alert("Something went wrong. Please try again.");
-            }
-        }
-    </script>
-</body>
-</html>
+
+h1{
+    font-family: "Story Script", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    font-size:50px;
+    position:relative;
+    bottom:200px;
+    margin-left:30px;
+}
+
+
+
+body{
+    margin:0;
+}
+
+#welcome{
+    text-align:center;
+    padding:0px;
+    font-family: "Libertinus Keyboard", system-ui;
+    font-weight: 400;
+    font-style: normal;
+    margin-left:auto;
+    margin-right:auto;
+    position:relative;
+    bottom:90px;
+    font-weight:1000;
+    font-size:60px;
+    width:600px;
+    min-width:600px;
+    height:60px;
+    color:black;
+
+}
+
+
+#desc{
+    text-align:center;
+    font-family: "Pacifico", cursive;
+    font-weight: 400;
+    font-style: normal;
+    font-size:20px;
+    margin-left:auto;
+    margin-right:auto;
+    position:relative;
+    bottom:130px;
+    min-width:600px;
+    width:auto;
+    height:100px;
+
+}
+
+#button{
+    font-family: "Roboto", sans-serif;
+    background-color: #4fa4ac;
+    color:white;
+    position:relative;
+    top:5px;
+    padding:5px;
+    font-size:25px;
+    width:290px;
+    padding-top:10px;
+    padding-bottom:10px;
+    margin-left:auto;
+    margin-right:auto;
+    text-align:center;
+    border-top-right-radius:8px;
+    border-bottom-left-radius:8px;
+    transition: all 0.3s ease;
+}
+
+#link{
+    text-decoration: none;
+    color:black;
+}
+
+#buttondiv{
+    text-align:center;
+}
+
+#button:hover{
+    font-size:26px;
+    background-color:#252424;
+    color: #ffffff;
+    border: 1px solid #111827;
+    box-shadow: 0 0 16px 4px rgba(0, 0, 0, 0.25);
+    transform: scale(1.05);
+}
+
+
+#dropdown{
+    position:relative;
+    text-align:center;
+    font-size:55px;
+    cursor: pointer;
+}
+
+#dropdownbutton{
+    position:absolute;
+    top:48px;
+    right:0;
+    background-color:#3a7c8b;
+    color:#ffffff;
+    padding:10px;
+    border-radius:8px;
+    z-index:1001;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+#dropdownbutton p{
+    background-color:#44d5e2;
+    border-radius:8px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    height:36px;
+    width:140px;
+    margin:0;
+    font-size:16px;
+    font-family: "Roboto", sans-serif;
+    transition: all 0.3s ease;
+}
+
+#linkteam{
+    color: white;
+    text-decoration: none;
+}
+
+#dropdownbutton p + p{
+    margin-top: 10px;
+}
+
+#dropdownbutton p:hover{
+    background-color:#252424;
+    color:#ffffff;
+    border: 1px solid #111827;
+    box-shadow: 0 0 16px 4px rgba(0, 0, 0, 0.25);
+    transform: scale(1.05);
+}
+
+#dropdowndiv{
+    position:fixed;
+    top:30px;
+    right:10px;
+    z-index:1000;
+}
+
+
+#dropdownbutton{
+    display:none;
+}
+
+#dropdowndiv:hover #dropdownbutton{
+    display:block;
+}
