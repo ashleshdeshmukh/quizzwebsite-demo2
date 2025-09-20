@@ -1,16 +1,28 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Story+Script&display=swap');
 
+
+body::-webkit-scrollbar{
+    display:none;
+}
+#sel{
+    text-decoration:none;
+    color:black;
+}
+html,body{
+    overflow-x:hidden;
+}
 html {
   background-color: antiquewhite;
   height: 100%;
-  overflow: hidden;
 }
 
 body {
   margin: 0;
   font-family: 'Poppins', sans-serif;
 }
+
+
 
 .curved-edge {
   --c: 70px;
@@ -154,7 +166,7 @@ h1{
 }
 
 #dropdowndiv{
-    position:fixed;
+    position:absolute;
     top:30px;
     right:10px;
     z-index:1000;
