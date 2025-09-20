@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from backend.models import db, Quiz, Question
+from backend.models import db, Quiz, Question, QuizResult, User
 
 quiz_bp = Blueprint('quiz', __name__)
 
@@ -69,35 +69,73 @@ def get_quiz_by_title():
 
 # backend/routes/quizzes.py
 @quiz_bp.route('/submit-score', methods=['POST'])
-#@jwt_required()
+@jwt_required()
 def submit_score():
-    identity = get_jwt_identity()
-    user_id = identity['id']
+    try:
+        identity = get_jwt_identity()
+        if not identity or 'id' not in identity:
+            return jsonify(message="Invalid user"), 401
+        user_id = identity['id']
 
-    data = request.json
-    quiz_id = data.get('quiz_id')
-    score = data.get('score')
-    total_questions = data.get('total_questions')
+        data = request.json
+        quiz_id = data.get('quiz_id')
+        score = data.get('score')
+        total_questions = data.get('total_questions')
 
-    if quiz_id is None or score is None or total_questions is None:
-        return jsonify(message="Incomplete data"), 400
+        if quiz_id is None or score is None or total_questions is None:
+            return jsonify(message="Incomplete data"), 400
 
-    # Save result
-    result = QuizResult(user_id=user_id, quiz_id=quiz_id, score=score, total_questions=total_questions)
-    db.session.add(result)
-    db.session.commit()
+        # Check if user already has a score for this quiz
+        existing = QuizResult.query.filter_by(user_id=user_id, quiz_id=quiz_id).first()
+        if existing:
+            # Update the score if needed
+            existing.score = score
+            existing.total_questions = total_questions
+        else:
+            # Create new entry
+            result = QuizResult(
+                user_id=user_id,
+                quiz_id=quiz_id,
+                score=score,
+                total_questions=total_questions
+            )
+            db.session.add(result)
 
-    return jsonify(message="Score submitted successfully")
+        db.session.commit()
+        return jsonify(message="Score submitted successfully"), 200
+
+    except Exception as e:
+        db.session.rollback()
+        print("Error in submit-score:", e)
+        return jsonify(message="Could not submit score"), 500
+
 
 @quiz_bp.route('/leaderboard/<int:quiz_id>', methods=['GET'])
 def leaderboard(quiz_id):
-    results = QuizResult.query.filter_by(quiz_id=quiz_id).order_by(QuizResult.score.desc()).limit(10).all()
+    # Ensure quiz_id is int
+    try:
+        quiz_id = int(quiz_id)
+    except:
+        return jsonify(message="Invalid quiz ID"), 400
+
+    # Fetch top 10 results for this quiz
+    results = QuizResult.query.filter_by(quiz_id=quiz_id) \
+        .order_by(QuizResult.score.desc()) \
+        .limit(10) \
+        .all()
+
     leaderboard_data = []
+
+    if not results:
+        return jsonify(message="No scores yet", leaderboard=[])
+
     for r in results:
         user = User.query.get(r.user_id)
-        leaderboard_data.append({
-            'username': user.username,
-            'score': r.score,
-            'total': r.total_questions
-        })
-    return jsonify(leaderboard_data)
+        if user:  # just in case
+            leaderboard_data.append({
+                'username': user.username,
+                'score': r.score,
+                'total': r.total_questions
+            })
+
+    return jsonify(leaderboard=leaderboard_data)
