@@ -69,15 +69,21 @@ def get_quiz_by_title():
 
 # backend/routes/quizzes.py
 @quiz_bp.route('/submit-score', methods=['POST'])
-@jwt_required()
+#@jwt_required()
 def submit_score():
     try:
-        identity = get_jwt_identity()
-        if not identity or 'id' not in identity:
-            return jsonify(message="Invalid user"), 401
-        user_id = identity['id']
+       # identity = get_jwt_identity()
+       # if not identity or 'id' not in identity:
+       #     return jsonify(message="Invalid user"), 401
+       # user_id = identity['id']
 
-        data = request.json
+        #data = request.json
+        #user_id = 1
+
+        data = request.get_json(force=True)
+        print("Incoming JSON:", data)
+
+        user_id=data.get('user_IDD')
         quiz_id = data.get('quiz_id')
         score = data.get('score')
         total_questions = data.get('total_questions')
@@ -113,10 +119,10 @@ def submit_score():
 @quiz_bp.route('/leaderboard/<int:quiz_id>', methods=['GET'])
 def leaderboard(quiz_id):
     # Ensure quiz_id is int
-    try:
-        quiz_id = int(quiz_id)
-    except:
-        return jsonify(message="Invalid quiz ID"), 400
+    #try:
+     #   quiz_id = int(quiz_id)
+    #except:
+     #   return jsonify(message="Invalid quiz ID"), 400
 
     # Fetch top 10 results for this quiz
     results = QuizResult.query.filter_by(quiz_id=quiz_id) \

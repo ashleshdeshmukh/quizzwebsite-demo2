@@ -94,7 +94,6 @@ async function fetchQuizzes() {
 // Redirect to leaderboard page when clicked
 document.getElementById("leaderboard-btn").addEventListener("click", () => {
     if (selectedQuiz) {
-        // Pass quiz ID in URL if you want leaderboard to open that quiz
         window.location.href = `leaderboard.html?quiz_id=${selectedQuiz.id}`;
     } else {
         alert("Please select a quiz first to view its leaderboard.");
@@ -210,44 +209,43 @@ document.getElementById("next-btn").addEventListener("click", async () => {
         document.getElementById("score-display").style.display = "none";
 
         // Submit score to backend only
-const token = localStorage.getItem("token");
+        const userId = localStorage.getItem("user_id");
+        const token = localStorage.getItem("token");
 
-if (!selectedQuiz || score == null || !currentQuestions) {
-    console.error("Cannot submit score: missing data", { selectedQuiz, score, currentQuestions });
-    return;
-}
+     //   if (!selectedQuiz || typeof score !== "number" || !currentQuestions?.length) {
+      //      console.error("Cannot submit score: missing or invalid data", { selectedQuiz, score, currentQuestions });
+      //      return;
+      //  }
 
-try {
-    const payload = {
-        quiz_id: Number(selectedQuiz.id),
-        score: Number(score),
-        total_questions: Number(currentQuestions.length)
-    };
+        try {
+            const payload = {
+                user_IDD: Number(userId),
+                quiz_id: Number(selectedQuiz.id),
+                score: Number(score),
+                total_questions: Number(currentQuestions.length)
+            };
 
-    const res = await fetch("http://127.0.0.1:8000/quiz/submit-score", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`
-        },
-        body: JSON.stringify(payload)
-    });
+            const res = await fetch("http://127.0.0.1:8000/quiz/submit-score", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"},
+                body: JSON.stringify(payload)
+            });
 
-    if (!res.ok) {
-        const errData = await res.json();
-        console.error("Score submission failed:", errData);
-    } else {
-        console.log("Score submitted successfully");
-    }
-} catch(err) {
-    console.log("Score not submitted");
-    console.error(err);
-}
-
+            if (!res.ok) {
+                const errData = await res.json();
+                console.error("Score submission failed:", errData);
+            } else {
+                console.log("Score submitted successfully");
+            }
+        } catch(err) {
+            console.error("Score not submitted", err);
+        }
     }
 });
 
 window.addEventListener("DOMContentLoaded", fetchQuizzes);
 </script>
+
 </body>
 </html>

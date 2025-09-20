@@ -21,6 +21,12 @@ def login():
     hashed_pw = hashlib.sha256(data['password'].encode()).hexdigest()
     user = User.query.filter_by(username=data['username'], password=hashed_pw).first()
     if user:
-        token = create_access_token(identity={'id':user.id, 'is_admin':user.is_admin})
-        return jsonify(token=token)
+        token = create_access_token(identity={'id': user.id, 'is_admin': user.is_admin})
+        return jsonify({
+            "token": token,
+            "user_id": user.id
+        })
+    #if user:
+     #   token = create_access_token(identity={'id':user.id, 'is_admin':user.is_admin})
+      #  return jsonify(token=token)
     return jsonify(message="Invalid credentials"), 401

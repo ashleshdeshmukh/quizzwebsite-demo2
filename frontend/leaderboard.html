@@ -88,17 +88,16 @@ let selectedQuiz = null, buttons = [];
 
 // Fetch quizzes for left panel
 async function fetchQuizzes() {
-    const token = localStorage.getItem("token");
-    if (!token) { alert("You must be logged in to see quizzes."); return; }
     try {
-        const res = await fetch("http://127.0.0.1:8000/quiz/all", {
-            headers: { "Authorization": `Bearer ${token}` }
-        });
+        const res = await fetch("http://127.0.0.1:8000/quiz/all");
         if (!res.ok) throw new Error("Failed to fetch quizzes");
         const quizzes = await res.json();
         const quizButtonsDiv = document.getElementById("quiz-buttons");
         quizButtonsDiv.innerHTML = "";
-        if (quizzes.length === 0) { quizButtonsDiv.textContent = "No quizzes available."; return; }
+        if (quizzes.length === 0) {
+            quizButtonsDiv.textContent = "No quizzes available.";
+            return;
+        }
 
         buttons = [];
         quizzes.forEach(q => {
@@ -125,22 +124,28 @@ async function selectQuiz(quizId, title, btn) {
     const leaderboardContainer = document.getElementById("leaderboard");
     leaderboardContainer.innerHTML = `<h3>${title} Leaderboard</h3><p>Loading...</p>`;
 
-    const token = localStorage.getItem("token");
+    // Get user_id from localStorage
+    //const user_id = localStorage.getItem("user_id");
+    //if (!user_id) {
+    //    leaderboardContainer.innerHTML = `<h3>${title} Leaderboard</h3><p>User not logged in.</p>`;
+    //   return;
+    //}
+
     try {
-        const res = await fetch(`http://127.0.0.1:8000/quiz/leaderboard/${quizId}`, {
-            headers: { "Authorization": `Bearer ${token}` }
-        });
+        // Fetch leaderboard for this quiz (no JWT)
+        const res = await fetch(`http://127.0.0.1:8000/quiz/leaderboard/${quizId}`);
         if (!res.ok) throw new Error("Failed to fetch leaderboard");
 
-        const data = await res.json();  // This should be a list
+        const data = await res.json();  // { leaderboard: [...] }
+        const leaderboard = data.leaderboard || [];
 
-        if (!data || data.length === 0) {
+        if (leaderboard.length === 0) {
             leaderboardContainer.innerHTML = `<h3>${title} Leaderboard</h3><p>No scores yet.</p>`;
             return;
         }
 
         const ol = document.createElement("ol");
-        data.forEach(entry => {
+        leaderboard.forEach(entry => {
             const li = document.createElement("li");
             li.textContent = `${entry.username}: ${entry.score}/${entry.total}`;
             ol.appendChild(li);
@@ -148,6 +153,7 @@ async function selectQuiz(quizId, title, btn) {
 
         leaderboardContainer.innerHTML = `<h3>${title} Leaderboard</h3>`;
         leaderboardContainer.appendChild(ol);
+
 
     } catch(err) {
         console.error(err);
@@ -157,6 +163,7 @@ async function selectQuiz(quizId, title, btn) {
 
 window.addEventListener("DOMContentLoaded", fetchQuizzes);
 </script>
+
 
 
 </body>

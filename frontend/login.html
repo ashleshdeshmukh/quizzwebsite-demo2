@@ -78,10 +78,14 @@
         const data = await res.json();
 
         if (res.ok) {
+           const userId = data.user_id || data.id;  // handles both keys
+
+            console.log("Logged in user ID:", userId);  // <-- print user id
+            localStorage.setItem("user_id", userId);   // <- store user id
             localStorage.setItem("token", data.token); // <-- store token
             window.location.href = "landing.html";
         } else {
-            alert(data.message || "Login failed");
+                  alert(data.message || "Login failed");
         }
     } catch (err) {
         console.error("Error:", err);
