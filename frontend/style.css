@@ -6,6 +6,12 @@
 
 @media screen and (max-width:600px){
 }
+body,html{
+    overflow-x: hidden;
+    overflow-y:hidden;
+}
+
+
 
 #desc{
     position: relative;
@@ -190,4 +196,3 @@ body{
 
 #dropdowndiv:hover #dropdownbutton{
     display:block;
-}
